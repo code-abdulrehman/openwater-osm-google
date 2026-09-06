@@ -1,0 +1,20 @@
+{
+  "name": "openwater-osm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Open-source drinking-water finder using OpenStreetMap data.",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "build:css": "npx @tailwindcss/cli -i ./src/input.css -o ./public/styles.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i ./src/input.css -o ./public/styles.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
