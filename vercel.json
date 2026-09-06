@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build:css",
+  "buildCommand": "pnpm run build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "public"
+  "outputDirectory": "dist"
 }
