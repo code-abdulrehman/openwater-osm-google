@@ -4,7 +4,7 @@
   const CONFIG = {
     apiBase: "/api",
     tileUrl: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    defaultCenter: [31.5204, 74.3587],
+    defaultCenter: [51.5074, -0.1278],
     defaultZoom: 13,
     defaultRadiusKm: 8,
     currentLocationZoom: 15,
@@ -60,7 +60,7 @@
   const waterLayer = L.layerGroup().addTo(map);
   const originLayer = L.layerGroup().addTo(map);
 
-  let origin = { lat: CONFIG.defaultCenter[0], lon: CONFIG.defaultCenter[1], label: "Lahore" };
+  let origin = { lat: CONFIG.defaultCenter[0], lon: CONFIG.defaultCenter[1], label: "London, United Kingdom" };
   let currentPoints = [];
   let currentRadiusKm = CONFIG.defaultRadiusKm;
   let suppressMovePrompt = false;
@@ -172,6 +172,7 @@
     let body = null;
     try { body = await response.json(); } catch {}
     if (!response.ok) throw new Error(body?.error || `Request failed with HTTP ${response.status}`);
+    if (!body) throw new Error("The API returned an empty response. Please try again.");
     return body;
   }
 
@@ -206,7 +207,7 @@
       const popup = `
         <div style="min-width:220px;font-family:system-ui,sans-serif">
           <div style="display:flex;gap:10px;align-items:flex-start">
-            <div style="font-size:20px">💧</div>
+            <div style="font-size:20px;color:#0284c7" aria-hidden="true">◆</div>
             <div style="min-width:0">
               <div style="font-weight:750;font-size:14px;color:#0f172a">${escapeHtml(p.name)}</div>
               <div style="margin-top:4px;color:#475569;font-size:12px">${formatDistance(p.distanceKm)} away</div>
@@ -237,7 +238,7 @@
 
     ui.results.innerHTML = currentPoints.slice(0, CONFIG.resultsLimit).map((p, i) => `
       <button type="button" class="result-item" data-point-index="${i}">
-        <span class="result-icon" aria-hidden="true">💧</span>
+        <span class="result-icon" aria-hidden="true">◆</span>
         <span class="result-copy">
           <span class="result-name">${escapeHtml(p.name)}</span>
           <span class="result-meta">${formatDistance(p.distanceKm)} · ${p.tags?.drinking_water === "yes" ? "potable tag" : "water point"}</span>
@@ -265,14 +266,14 @@
       ui.searchButton.disabled = true;
 
       const payload = await fetchWaterPoints(lat, lon, currentRadiusKm, force);
-      renderPoints(payload.points || []);
+      renderPoints(payload?.points || []);
 
       suppressMovePrompt = true;
       map.setView([lat, lon], zoom ?? map.getZoom(), { animate: true });
       setTimeout(() => { suppressMovePrompt = false; }, 450);
       fixMapSize();
 
-      const count = (payload.points || []).length;
+      const count = (payload?.points || []).length;
       setStatus(`${count} water point${count === 1 ? "" : "s"} found nearby`, "success", 2600);
     } catch (error) {
       console.error(error);
@@ -380,8 +381,8 @@
   });
 
   async function boot() {
-    ui.searchInput.value = "Lahore, Pakistan";
-    setOrigin(CONFIG.defaultCenter[0], CONFIG.defaultCenter[1], "Lahore, Pakistan");
+    ui.searchInput.value = "London, United Kingdom";
+    setOrigin(CONFIG.defaultCenter[0], CONFIG.defaultCenter[1], "London, United Kingdom");
     fixMapSize();
     await loadArea(CONFIG.defaultCenter[0], CONFIG.defaultCenter[1], CONFIG.defaultRadiusKm, { zoom: CONFIG.defaultZoom });
   }

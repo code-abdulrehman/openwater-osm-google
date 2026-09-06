@@ -1170,6 +1170,23 @@ button, input { -webkit-tap-highlight-color: transparent; }
   pointer-events: none;
 }
 
+.site-footer {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  /* margin: 8px 12px 10px; */
+  padding: 7px 11px;
+  border: 1px solid rgba(15,23,42,.08);
+  /* border-radius: 9px; */
+  background: rgba(255,255,255,.9);
+  color: #64748b;
+  font-size: 10px;
+  box-shadow: 0 1px 5px rgba(15,23,42,.12);
+}
+.site-footer a { color: #0369a1; font-weight: 700; text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
+
 .water-pin-wrap { background: transparent !important; border: 0 !important; }
 .water-pin {
   position: relative;
@@ -1240,5 +1257,6 @@ button, input { -webkit-tap-highlight-color: transparent; }
   .results-list { max-height: 180px; }
   .locate-fab { right: 10px; bottom: max(84px, calc(env(safe-area-inset-bottom) + 84px)); }
   .map-note { display: none; }
+  .site-footer { margin-bottom: 8px; font-size: 9px; }
   .leaflet-control-zoom { margin-top: 80px !important; }
 }
