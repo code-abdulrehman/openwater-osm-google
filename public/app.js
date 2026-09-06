@@ -207,7 +207,7 @@
       const popup = `
         <div style="min-width:220px;font-family:system-ui,sans-serif">
           <div style="display:flex;gap:10px;align-items:flex-start">
-            <div style="font-size:20px;color:#0284c7" aria-hidden="true">◆</div>
+            <div style="width:24px;height:28px;color:#0284c7" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 2.4c-2.9 4-5.8 7.4-5.8 11A5.8 5.8 0 0 0 12 19.2a5.8 5.8 0 0 0 5.8-5.8c0-3.6-2.9-7-5.8-11Z" fill="currentColor"/><path d="M9.1 14.1c.45 1.2 1.46 1.9 2.75 2.02" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
             <div style="min-width:0">
               <div style="font-weight:750;font-size:14px;color:#0f172a">${escapeHtml(p.name)}</div>
               <div style="margin-top:4px;color:#475569;font-size:12px">${formatDistance(p.distanceKm)} away</div>
@@ -238,7 +238,7 @@
 
     ui.results.innerHTML = currentPoints.slice(0, CONFIG.resultsLimit).map((p, i) => `
       <button type="button" class="result-item" data-point-index="${i}">
-        <span class="result-icon" aria-hidden="true">◆</span>
+        <span class="result-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 2.4c-2.9 4-5.8 7.4-5.8 11A5.8 5.8 0 0 0 12 19.2a5.8 5.8 0 0 0 5.8-5.8c0-3.6-2.9-7-5.8-11Z" fill="currentColor"/><path d="M9.1 14.1c.45 1.2 1.46 1.9 2.75 2.02" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></span>
         <span class="result-copy">
           <span class="result-name">${escapeHtml(p.name)}</span>
           <span class="result-meta">${formatDistance(p.distanceKm)} · ${p.tags?.drinking_water === "yes" ? "potable tag" : "water point"}</span>
