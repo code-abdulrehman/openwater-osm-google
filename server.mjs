@@ -364,7 +364,7 @@ async function serveStatic(res, urlPath) {
   }
 }
 
-const server = http.createServer(async (req, res) => {
+export async function handler(req, res) {
   try {
     const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
 
@@ -378,10 +378,13 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Internal server error");
   }
-});
+}
 
-server.listen(PORT, HOST, () => {
-  console.log(`OpenWater running at http://${HOST}:${PORT}`);
-  console.log(`User-Agent: ${APP_USER_AGENT}`);
-  console.log("Tip: set OPENWATER_USER_AGENT to identify your public deployment.");
-});
+if (!process.env.VERCEL) {
+  const server = http.createServer(handler);
+  server.listen(PORT, HOST, () => {
+    console.log(`OpenWater running at http://${HOST}:${PORT}`);
+    console.log(`User-Agent: ${APP_USER_AGENT}`);
+    console.log("Tip: set OPENWATER_USER_AGENT to identify your public deployment.");
+  });
+}
