@@ -2,5 +2,11 @@
   "version": 2,
   "buildCommand": "pnpm run build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "functions": {
+    "api/index.mjs": {
+      "includeFiles": "public/**",
+      "maxDuration": 60
+    }
+  }
 }
