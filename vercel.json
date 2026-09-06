@@ -4,8 +4,7 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "outputDirectory": "dist",
   "functions": {
-    "api/index.mjs": {
-      "includeFiles": "public/**",
+    "api/*.mjs": {
       "maxDuration": 60
     }
   }
