@@ -2,16 +2,5 @@
   "version": 2,
   "buildCommand": "npm run build:css",
   "installCommand": "pnpm install --frozen-lockfile",
-  "functions": {
-    "api/index.mjs": {
-      "includeFiles": "public/**",
-      "maxDuration": 60
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.mjs"
-    }
-  ]
+  "outputDirectory": "public"
 }

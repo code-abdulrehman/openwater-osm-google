@@ -2,7 +2,8 @@
   "use strict";
 
   const CONFIG = {
-    apiBase: "/api",
+    nominatimUrl: "https://nominatim.openstreetmap.org",
+    overpassUrl: "https://overpass-api.de/api/interpreter",
     tileUrl: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     defaultCenter: [31.5204, 74.3587],
     defaultZoom: 13,
@@ -175,25 +176,49 @@
     return body;
   }
 
-  function fetchWaterPoints(lat, lon, radiusKm, force = false) {
-    const params = new URLSearchParams({
-      lat: String(lat),
-      lon: String(lon),
-      radiusKm: String(radiusKm),
-      force: force ? "1" : "0"
+  async function fetchWaterPoints(lat, lon, radiusKm) {
+    const radiusMeters = Math.round(radiusKm * 1000);
+    const query = `[out:json][timeout:25];(nwr["amenity"="drinking_water"](around:${radiusMeters},${lat},${lon});nwr["drinking_water"="yes"](around:${radiusMeters},${lat},${lon}););out center tags;`;
+    const response = await fetch(CONFIG.overpassUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: `data=${encodeURIComponent(query)}`
     });
-    return apiJson(`${CONFIG.apiBase}/water?${params}`);
+    if (!response.ok) throw new Error(`OpenStreetMap returned HTTP ${response.status}`);
+    const payload = await response.json();
+    const points = new Map();
+    for (const element of payload.elements || []) {
+      const pointLat = element.lat ?? element.center?.lat;
+      const pointLon = element.lon ?? element.center?.lon;
+      if (!Number.isFinite(pointLat) || !Number.isFinite(pointLon)) continue;
+      const tags = element.tags || {};
+      points.set(`${element.type}:${element.id}`, {
+        osmType: element.type,
+        osmId: element.id,
+        lat: pointLat,
+        lon: pointLon,
+        name: tags.name || tags["name:en"] || tags.operator || "Drinking-water point",
+        tags,
+        osmUrl: `https://www.openstreetmap.org/${element.type}/${element.id}`
+      });
+    }
+    return { points: [...points.values()] };
   }
 
-  function geocodePlace(query) {
+  async function geocodePlace(query) {
     const normalized = query.trim();
     if (!normalized) throw new Error("Enter a city or place.");
-    return apiJson(`${CONFIG.apiBase}/geocode?q=${encodeURIComponent(normalized)}`);
+    const params = new URLSearchParams({ q: normalized, format: "jsonv2", limit: "1", addressdetails: "1" });
+    const results = await apiJson(`${CONFIG.nominatimUrl}/search?${params}`);
+    if (!results.length) throw new Error("Place not found.");
+    const place = results[0];
+    return { lat: Number(place.lat), lon: Number(place.lon), displayName: place.display_name, shortName: place.display_name.split(",").slice(0, 2).join(","), bbox: place.boundingbox?.map(Number) || null };
   }
 
-  function reverseGeocode(lat, lon) {
+  async function reverseGeocode(lat, lon) {
     const params = new URLSearchParams({ lat: String(lat), lon: String(lon) });
-    return apiJson(`${CONFIG.apiBase}/reverse?${params}`);
+    const place = await apiJson(`${CONFIG.nominatimUrl}/reverse?${params}&format=jsonv2&zoom=18&addressdetails=1`);
+    return { lat: Number(place.lat ?? lat), lon: Number(place.lon ?? lon), displayName: place.display_name, shortName: place.display_name?.split(",").slice(0, 2).join(",") };
   }
 
   function renderPoints(points) {
